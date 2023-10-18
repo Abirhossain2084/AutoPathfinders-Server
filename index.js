@@ -36,8 +36,25 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    const productCollection=client.db('productDB').collection('product')
 
-    
+
+
+//post or add data to mdb
+    app.post('/product',async(req,res)=>{
+      const newProduct = req.body;
+      console.log(newProduct);
+      const result = await productCollection.insertOne(newProduct);
+      res.send(result);
+    })
+
+//get those data from   mdb
+    app.get('/product',async(req,res)=>{
+      const cursor = productCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+
+    })
 
 
     // Send a ping to confirm a successful connection
