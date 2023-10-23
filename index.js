@@ -19,7 +19,7 @@ app.use(express.json());
 user = process.env.DB_USER
 pass = process.env.DB_PASS
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${user}:${pass}@cluster0.imav3gf.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -55,6 +55,23 @@ async function run() {
       res.send(result);
 
     })
+
+// Get All product by name
+app.get('/product/:name', async (req, res) => {
+  const name = req.params.name;
+  const query = { name: { $regex: new RegExp(name, 'i') }}// Query by the product's name
+  const results = await productCollection.find(query).toArray();
+  res.send(results);
+});
+
+// Get All product id and update
+app.get('/product/:id', async (req, res) => {
+  const id = req.params.id;
+  const query = { _id : new ObjectId(id)}// Query by the product's name
+  const results = await productCollection.findOne(query);
+  res.send(results);
+});
+
 
 
     // Send a ping to confirm a successful connection
