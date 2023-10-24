@@ -36,41 +36,69 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const productCollection=client.db('productDB').collection('product')
+    const productCollection = client.db('productDB').collection('product')
 
 
 
-//post or add data to mdb
-    app.post('/product',async(req,res)=>{
+    //post or add data to mdb
+    app.post('/product', async (req, res) => {
       const newProduct = req.body;
       console.log(newProduct);
       const result = await productCollection.insertOne(newProduct);
       res.send(result);
     })
 
-//get those data from   mdb
-    app.get('/product',async(req,res)=>{
+
+    //get those data from   mdb
+    app.get('/product', async (req, res) => {
       const cursor = productCollection.find();
       const result = await cursor.toArray();
       res.send(result);
 
     })
 
-// Get All product by name
-app.get('/product/:name', async (req, res) => {
-  const name = req.params.name;
-  const query = { name: { $regex: new RegExp(name, 'i') }}// Query by the product's name
-  const results = await productCollection.find(query).toArray();
-  res.send(results);
+
+    // Get All product by name
+    app.get('/product/:name', async (req, res) => {
+      const name = req.params.name;
+      const query = { name: { $regex: new RegExp(name, 'i') } }// Query by the product's name
+      const results = await productCollection.find(query).toArray();
+      res.send(results);
+    });
+
+
+
+    // Get All product id and update
+    app.get('/product/id/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }// Query by the product's name
+      const result = await productCollection.findOne(query);
+      res.send(result);
+    });
+
+// Update a product by ID
+app.put('/product/id/:id', async (req, res) => {
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) }; // Query by the product's ID
+  const options = { upsert: true };
+  
+  // Construct an update object with $set
+  const updateObject = {
+    $set: {
+      name: req.body.name,
+      type: req.body.type,
+      price: req.body.price,
+      description: req.body.description,
+      rating: req.body.rating,
+      photo: req.body.photo,
+    }
+  };
+
+  const result = await productCollection.updateOne(filter, updateObject, options);
+  res.send(result);
+  console.log(result);
 });
 
-// Get All product id and update
-app.get('/product/:id', async (req, res) => {
-  const id = req.params.id;
-  const query = { _id : new ObjectId(id)}// Query by the product's name
-  const results = await productCollection.findOne(query);
-  res.send(results);
-});
 
 
 
@@ -89,10 +117,10 @@ run().catch(console.dir);
 
 
 
-app.get('/',(req,res)=>{
-    res.send('running')
+app.get('/', (req, res) => {
+  res.send('running')
 })
 
-app.listen(port,()=>{
-    console.log(`running port : ${port}`);
+app.listen(port, () => {
+  console.log(`running port : ${port}`);
 })
