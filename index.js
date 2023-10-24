@@ -10,7 +10,8 @@ app.use(cors());
 app.use(express.json());
 
 
-
+// Store the cart items in an array
+const cart = [];
 
 
 
@@ -37,6 +38,7 @@ async function run() {
     await client.connect();
 
     const productCollection = client.db('productDB').collection('product')
+    const cartCollection = client.db('productDB').collection('cartproduct')
 
 
 
@@ -99,6 +101,24 @@ app.put('/product/id/:id', async (req, res) => {
   console.log(result);
 });
 
+
+// add add-to-cart data
+
+app.post('/cartproduct/add-to-cart', async (req, res) => {
+  const cartproduct = req.body;
+  console.log(cartproduct);
+  const result = await cartCollection.insertOne(cartproduct);
+  res.send(result);
+  console.log('hitting');
+})
+
+ //get those cart data from   mdb
+ app.get('/cartproduct/add-to-cart', async (req, res) => {
+  const cursor = cartCollection.find();
+  const result = await cursor.toArray();
+  res.send(result);
+
+})
 
 
 
