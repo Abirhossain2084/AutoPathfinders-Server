@@ -121,6 +121,16 @@ app.post('/cartproduct/add-to-cart', async (req, res) => {
 })
 
 
+// app.get('/cartproduct/get-cart', async (req, res) => {
+//   const userId = req.user.id; // Get the user's identifier after authentication
+//   const cursor = cartCollection.find({ userId }); // Only fetch items associated with the current user
+//   const result = await cursor.toArray();
+//   res.send(result);
+// });
+
+
+
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
